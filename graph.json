@@ -1,0 +1,595 @@
+{
+  "version": "1.0.0",
+  "skill_name": "epiphany-graph-analysis",
+  "kb_base": "~/.claude/skills/epiphany-graph-analysis/kb/",
+  "session_output_base": "~/docs/epiphany/graph-analysis/",
+  "nodes": [
+    {
+      "id": "N1",
+      "module_file": "modules/N1.md",
+      "module_version": "1.0.0",
+      "type": "DECOMPOSITION",
+      "exec_type": "inline",
+      "hat": "Einstein/Feynman",
+      "kb_files": [
+        "input-preloading-templates.md"
+      ],
+      "context_budget_lines": 200,
+      "scale_gates": [
+        "MINIMAL",
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [],
+      "output_file": "stages/N1-intake-decompose.md",
+      "required_output_sections": [
+        "Node A Overview",
+        "Node B Genius Detection",
+        "Intake Digest",
+        "HG-1 Verification"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N2",
+      "module_file": "modules/N2.md",
+      "module_version": "1.0.0",
+      "type": "ANALYZE",
+      "exec_type": "spawn",
+      "hat": "Tesla+Darwin",
+      "kb_files": [
+        "analysis-methodology.md"
+      ],
+      "context_budget_lines": 1500,
+      "scale_gates": [
+        "MINIMAL",
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N1-intake-decompose.md"
+      ],
+      "output_file": "stages/N2-dual-analyze.md",
+      "required_output_sections": [
+        "A1 Structural Analysis",
+        "B1 Findings Analysis",
+        "Analysis Digest",
+        "Signal Flags"
+      ],
+      "raises_signals": [
+        "S2_thin_B"
+      ]
+    },
+    {
+      "id": "N3",
+      "module_file": "modules/N3.md",
+      "module_version": "1.0.0",
+      "type": "TAILOR",
+      "exec_type": "inline",
+      "hat": "Feynman",
+      "kb_files": [
+        "section-tailoring-map.md"
+      ],
+      "context_budget_lines": 600,
+      "scale_gates": [
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "conditional:forward-conditional"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N2-dual-analyze.md",
+        "stages/N1-intake-decompose.md"
+      ],
+      "output_file": "stages/N3-section-tailor.md",
+      "required_output_sections": [
+        "Tailored B1 Sections",
+        "Section Coverage",
+        "Tailored Digest"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N4",
+      "module_file": "modules/N4.md",
+      "module_version": "1.0.0",
+      "type": "XREF",
+      "exec_type": "inline",
+      "hat": "Tesla (bridge-builder)",
+      "kb_files": [],
+      "context_budget_lines": 800,
+      "scale_gates": [
+        "MINIMAL",
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N2-dual-analyze.md",
+        "stages/N3-section-tailor.md",
+        "stages/N1-intake-decompose.md"
+      ],
+      "output_file": "stages/N4-cross-reference.md",
+      "required_output_sections": [
+        "Cross-Reference Map",
+        "B-Finding to A-Section Mappings",
+        "Xref Digest"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N5",
+      "module_file": "modules/N5.md",
+      "module_version": "1.0.0",
+      "type": "LATERAL",
+      "exec_type": "spawn",
+      "hat": "de Bono",
+      "kb_files": [
+        "domain-catalog.md",
+        "debono-techniques.md"
+      ],
+      "context_budget_lines": 1200,
+      "scale_gates": [
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N4-cross-reference.md"
+      ],
+      "output_file": "stages/N5-lateral-ideate.md",
+      "required_output_sections": [
+        "Domain Passes",
+        "Lateral Ideas (<=50)",
+        "Ideas Digest"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N6",
+      "module_file": "modules/N6.md",
+      "module_version": "1.0.0",
+      "type": "DEFIXATION",
+      "exec_type": "inline",
+      "hat": "Ohlsson",
+      "kb_files": [
+        "ohlsson-defixation.md"
+      ],
+      "context_budget_lines": 700,
+      "scale_gates": [
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "conditional:back-edge"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N2-dual-analyze.md"
+      ],
+      "output_file": "stages/N6-defixation.md",
+      "required_output_sections": [
+        "Constraint Relaxations",
+        "Chunk Decompositions",
+        "Re-encodings",
+        "Selected Breakthrough",
+        "Breakthrough Digest"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N7",
+      "module_file": "modules/N7.md",
+      "module_version": "1.0.0",
+      "type": "ADVERSARIAL",
+      "exec_type": "spawn",
+      "hat": "Popper+Millikan",
+      "kb_files": [
+        "falsification-checklists.md"
+      ],
+      "context_budget_lines": 1500,
+      "scale_gates": [
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N5-lateral-ideate.md",
+        "stages/N6-defixation.md"
+      ],
+      "output_file": "stages/N7-adversarial-verify.md",
+      "required_output_sections": [
+        "Falsification Tests",
+        "Counter-examples",
+        "Falsification Result",
+        "Adversarial Digest",
+        "Signal Flags"
+      ],
+      "raises_signals": [
+        "S7_no_alternatives"
+      ]
+    },
+    {
+      "id": "N8",
+      "module_file": "modules/N8.md",
+      "module_version": "1.0.0",
+      "type": "ENGINEER",
+      "exec_type": "inline",
+      "hat": "Feynman+Boden",
+      "kb_files": [
+        "verification-gates.md"
+      ],
+      "context_budget_lines": 1500,
+      "scale_gates": [
+        "MINIMAL",
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N4-cross-reference.md",
+        "stages/N5-lateral-ideate.md",
+        "stages/N7-adversarial-verify.md",
+        "stages/N6-defixation.md"
+      ],
+      "output_file": "stages/N8-solution-engineer.md",
+      "required_output_sections": [
+        "Solution Candidates",
+        "Two-Draft Comparisons",
+        "Accepted Solutions",
+        "Solutions Digest"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N9",
+      "module_file": "modules/N9.md",
+      "module_version": "1.0.0",
+      "type": "ROUTER",
+      "exec_type": "inline",
+      "hat": null,
+      "kb_files": [],
+      "context_budget_lines": 50,
+      "scale_gates": [
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N7-adversarial-verify.md"
+      ],
+      "output_file": "stages/N9-router-record.md",
+      "required_output_sections": [
+        "Routing Decision",
+        "Signal Flags Checked",
+        "Falsification Digest"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N10",
+      "module_file": "modules/N10.md",
+      "module_version": "1.0.0",
+      "type": "SYNTHESIS",
+      "exec_type": "spawn",
+      "hat": "Feynman+Boden(synthesizer)",
+      "kb_files": [],
+      "context_budget_lines": 2000,
+      "scale_gates": [
+        "MINIMAL",
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N8-solution-engineer.md"
+      ],
+      "output_file": "stages/N10-synthesize.md",
+      "required_output_sections": [
+        "Enhanced Draft",
+        "Enhancement Summary",
+        "Enhanced Digest"
+      ],
+      "raises_signals": []
+    },
+    {
+      "id": "N11",
+      "module_file": "modules/N11.md",
+      "module_version": "1.0.0",
+      "type": "VERIFICATION",
+      "exec_type": "inline",
+      "hat": "Popper",
+      "kb_files": [],
+      "context_budget_lines": 600,
+      "scale_gates": [
+        "MINIMAL",
+        "STANDARD",
+        "DEEP"
+      ],
+      "activation": [
+        "always"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N10-synthesize.md"
+      ],
+      "output_file": "stages/N11-verify.md",
+      "required_output_sections": [
+        "R1 Draft Comparison Check",
+        "R2 Target Section Check",
+        "R3 Contradiction Check",
+        "R4 Constraint Preservation Check",
+        "R5 Well-formed Markdown Check",
+        "R6 Artifact Completeness Check",
+        "Verification Verdict"
+      ],
+      "raises_signals": [
+        "S11_artifact_gap"
+      ]
+    },
+    {
+      "id": "N12",
+      "module_file": "modules/N12.md",
+      "module_version": "1.0.0",
+      "type": "EXPANSION",
+      "exec_type": "inline",
+      "hat": "Feynman",
+      "kb_files": [],
+      "context_budget_lines": 800,
+      "scale_gates": [
+        "DEEP"
+      ],
+      "activation": [
+        "conditional:forward-conditional"
+      ],
+      "enabled_when": null,
+      "input_dependencies": [
+        "stages/N11-verify.md"
+      ],
+      "output_file": "stages/N12-expand.md",
+      "required_output_sections": [
+        "Thin Spots Identified",
+        "Second-Pass Deepening",
+        "Expansion Digest"
+      ],
+      "raises_signals": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "E01",
+      "source": "input",
+      "target": "N1",
+      "type": "required",
+      "signal_field": "—",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E02",
+      "source": "N1",
+      "target": "N2",
+      "type": "required",
+      "signal_field": "intake_digest",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E03",
+      "source": "N1",
+      "target": "N4",
+      "type": "optional",
+      "signal_field": "intake_digest",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E04",
+      "source": "N2",
+      "target": "N3",
+      "type": "forward-conditional",
+      "signal_field": "analysis_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": "SIGNAL_STATE[(N1, intake_digest)].node_b_type in ['genius-current', 'genius-drift']"
+    },
+    {
+      "id": "E05",
+      "source": "N2",
+      "target": "N4",
+      "type": "required",
+      "signal_field": "analysis_digest",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E06",
+      "source": "N2",
+      "target": "N6",
+      "type": "back-edge",
+      "signal_field": "gate:S2_thin_B",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": "SIGNAL_STATE[(N2, analysis_digest)].signal_flags includes 'S2_thin_B'"
+    },
+    {
+      "id": "E07",
+      "source": "N3",
+      "target": "N4",
+      "type": "optional",
+      "signal_field": "tailored_B1",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E08",
+      "source": "N4",
+      "target": "N5",
+      "type": "required",
+      "signal_field": "xref_map",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E09",
+      "source": "N4",
+      "target": "N8",
+      "type": "required",
+      "signal_field": "xref_map",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E10",
+      "source": "N5",
+      "target": "N7",
+      "type": "required",
+      "signal_field": "ideas_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E11",
+      "source": "N5",
+      "target": "N8",
+      "type": "required",
+      "signal_field": "ideas_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E13",
+      "source": "N6",
+      "target": "N8",
+      "type": "optional",
+      "signal_field": "breakthrough_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E14",
+      "source": "N7",
+      "target": "N9",
+      "type": "required",
+      "signal_field": "falsification_result",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E15",
+      "source": "N8",
+      "target": "N10",
+      "type": "required",
+      "signal_field": "solutions_digest",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E16",
+      "source": "N9",
+      "target": "N6",
+      "type": "back-edge",
+      "signal_field": "gate:S7_no_alternatives AND NOT N6_ran",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": "SIGNAL_STATE[(N7, falsification_result)].signal_flags includes 'S7_no_alternatives' AND 'N6' not in executed_nodes"
+    },
+    {
+      "id": "E17",
+      "source": "N9",
+      "target": "N8",
+      "type": "gate-open",
+      "signal_field": "falsification_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E18",
+      "source": "N10",
+      "target": "N11",
+      "type": "required",
+      "signal_field": "enhanced_draft",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E19",
+      "source": "N11",
+      "target": "N12",
+      "type": "forward-conditional",
+      "signal_field": "first_pass_verified",
+      "scale_gates": ["DEEP"],
+      "gate_condition": "SIGNAL_STATE[(N11, first_pass_verified)].signal_flags includes 'S11_artifact_gap' AND mode=DEEP"
+    },
+    {
+      "id": "E20",
+      "source": "N12",
+      "target": "N10",
+      "type": "back-edge",
+      "signal_field": "expansion_digest",
+      "scale_gates": ["DEEP"],
+      "gate_condition": "N12 completed with expansions"
+    },
+    {
+      "id": "E21",
+      "source": "N10",
+      "target": "output",
+      "type": "terminal",
+      "signal_field": "—",
+      "scale_gates": ["MINIMAL", "STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E22",
+      "source": "N7",
+      "target": "N8",
+      "type": "optional",
+      "signal_field": "adversarial_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E23",
+      "source": "N1",
+      "target": "N3",
+      "type": "optional",
+      "signal_field": "intake_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    },
+    {
+      "id": "E24",
+      "source": "N6",
+      "target": "N7",
+      "type": "optional",
+      "signal_field": "breakthrough_digest",
+      "scale_gates": ["STANDARD", "DEEP"],
+      "gate_condition": null
+    }
+  ]
+}
