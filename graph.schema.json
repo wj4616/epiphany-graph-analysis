@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "epiphany-graph-analysis topology schema",
+  "type": "object",
+  "required": ["version", "nodes", "edges", "signal_field_enum"],
+  "properties": {
+    "version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "type", "exec_type", "scale_gates", "context_budget_lines", "output_file", "sort_key"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^N[0-9]+(\\.[0-9]+)?[a-z]?$"},
+          "name": {"type": "string"},
+          "type": {"enum": ["DECOMPOSE", "ANALYZE-A", "ANALYZE-B", "TAILOR", "XREF", "LATERAL", "FILTER", "DEFIX", "ADVERSARIAL", "ENGINEER", "ROUTER", "SYNTHESIS", "VERIFY", "EXPANSION"]},
+          "exec_type": {"enum": ["inline", "spawn"]},
+          "hat": {"type": ["string", "null"]},
+          "context_budget_lines": {"type": "integer", "minimum": 1},
+          "scale_gates": {"type": "array", "items": {"enum": ["STANDARD", "DEEP"]}},
+          "activation": {"type": "array"},
+          "raises_signals": {"type": "array", "items": {"type": "string"}},
+          "kb_files": {"type": "array", "items": {"type": "string"}},
+          "required_output_sections": {"type": "array", "items": {"type": "string"}},
+          "output_file": {"type": "string"},
+          "sort_key": {"type": "number"}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "source", "target", "type", "scale_gates"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^E[0-9]+$"},
+          "source": {"type": "string"},
+          "target": {"type": "string"},
+          "type": {"enum": ["required", "optional", "forward-conditional", "back-edge", "gate-open", "terminal"]},
+          "signal_field": {"type": "string"},
+          "scale_gates": {"type": "array", "items": {"enum": ["STANDARD", "DEEP"]}},
+          "gate_condition": {"type": ["string", "null"]},
+          "single_firing_cap": {"type": "boolean"}
+        }
+      }
+    },
+    "signal_field_enum": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}
