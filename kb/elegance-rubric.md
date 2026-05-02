@@ -1,4 +1,4 @@
-# Elegance Rubric — Operational Reference (N3, N7)
+# Elegance Rubric — Operational Reference (N5, N5.5, N8)
 
 ## Three Components of Elegance
 

@@ -2,7 +2,7 @@
 
 A Graph-of-Thought reimplementation of `epiphany-analysis`. Takes an original text (Node A) and an analysis of that text (Node B), produces a fresh enhanced Node A plus rich cataloging artifacts via a 14-node signal-driven graph topology with parallel spawn nodes and inline role-switched blocks.
 
-**Status:** v1.0.3 design approved. Implementation in progress.
+**Status:** v1.0.2 — Pass 2 audit fixes integrated. See `CHANGELOG.md`.
 
 **Design spec:** [docs/2026-04-29-design.md](docs/2026-04-29-design.md) — also at `~/docs/superpowers/specs/2026-04-29-epiphany-graph-analysis-design.md`.
 
@@ -12,10 +12,13 @@ A Graph-of-Thought reimplementation of `epiphany-analysis`. Takes an original te
 
 See spec "Quick Reference" section for invocation, modes, artifacts, hard gates, verification battery.
 
-## Usage (once built)
+## Usage
 
 ```
 /epiphany-graph-analysis <node-a> [<node-b>] [--deep] [--quiet|--verbose]
+                                              [--genius-threshold=N] [--drift-threshold=N]
+/epiphany-graph-analysis --resume <session_dir>
+/epiphany-graph-analysis --retry-failed <session_dir>
 ```
 
 ## Precedents
@@ -31,4 +34,4 @@ See spec "Quick Reference" section for invocation, modes, artifacts, hard gates,
 - `modules/N*.md` — per-node protocols (14 files)
 - `kb/*.md` — knowledge base (12 files)
 - `scripts/` — session-init.sh, validate-graph.py, test-runner.sh
-- `tests/` — fixtures + smoke/signal/hg/verification/regression/replay
+- `tests/` — fixtures + smoke/signal/hg/verification/regression/replay/unit

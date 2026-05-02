@@ -33,6 +33,17 @@ SESSION_ID="${DATE_SHORT}-${RANDOM_HEX}"
 
 # ── Create directories ──────────────────────────────────────────────────
 SESSION_DIR="${OUTPUT_BASE%/}/${SESSION_ID}"
+
+# Auto-suffix on (extremely unlikely) collision
+SUFFIX=""
+COUNTER=2
+while [[ -d "${SESSION_DIR}${SUFFIX}" ]]; do
+    SUFFIX="-${COUNTER}"
+    COUNTER=$((COUNTER + 1))
+done
+SESSION_DIR="${SESSION_DIR}${SUFFIX}"
+SESSION_ID="${SESSION_ID}${SUFFIX}"
+
 mkdir -p "${SESSION_DIR}/stages"
 
 # ── Resolve Node A ──────────────────────────────────────────────────────
@@ -40,41 +51,71 @@ if [[ -f "$NODE_A" ]]; then
     cp "$NODE_A" "${SESSION_DIR}/input-a.md"
     echo "  [init] Node A copied from file: ${NODE_A}" >&2
     NODE_A_CLASS="file"
+    NODE_A_PATH="$NODE_A"
 else
-    echo "$NODE_A" > "${SESSION_DIR}/input-a.md"
+    printf '%s' "$NODE_A" > "${SESSION_DIR}/input-a.md"
     echo "  [init] Node A inlined (${#NODE_A} chars)" >&2
     NODE_A_CLASS="inline"
+    NODE_A_PATH="inline"
 fi
 
 # ── Resolve Node B ──────────────────────────────────────────────────────
-if [[ "$NODE_B" == "-" ]]; then
+if [[ "$NODE_B" == "-" || -z "$NODE_B" ]]; then
     NODE_B_CLASS="none"
+    NODE_B_PATH="inline-substitute"
+    echo "inline-substitute" > "${SESSION_DIR}/input-b.md"
     echo "  [init] Node B not provided — N1 will substitute inline" >&2
 elif [[ -f "$NODE_B" ]]; then
     cp "$NODE_B" "${SESSION_DIR}/input-b.md"
     echo "  [init] Node B copied from file: ${NODE_B}" >&2
     NODE_B_CLASS="file"
+    NODE_B_PATH="$NODE_B"
 else
-    echo "$NODE_B" > "${SESSION_DIR}/input-b.md"
+    printf '%s' "$NODE_B" > "${SESSION_DIR}/input-b.md"
     echo "  [init] Node B inlined (${#NODE_B} chars)" >&2
     NODE_B_CLASS="inline"
+    NODE_B_PATH="inline"
 fi
 
-# ── Write session metadata ──────────────────────────────────────────────
-python3 -c "
-import json, sys
+# ── Write session metadata (full spec §4.13 schema) ─────────────────────
+# Pass values via env vars to avoid heredoc-quote injection.
+export _SESSION_ID="$SESSION_ID"
+export _CREATED_AT="$TIMESTAMP"
+export _MODE="$MODE"
+export _NODE_A_CLASS="$NODE_A_CLASS"
+export _NODE_B_CLASS="$NODE_B_CLASS"
+export _NODE_A_PATH="$NODE_A_PATH"
+export _NODE_B_PATH="$NODE_B_PATH"
+export _SESSION_DIR="$SESSION_DIR"
+
+python3 <<'PY' > "${SESSION_DIR}/session.json.tmp"
+import json, os
 meta = {
-    'session_id': '${SESSION_ID}',
-    'created_at': '${TIMESTAMP}',
-    'mode': '${MODE}',
-    'skill_version': '1.0.0',
-    'node_a_source': '${NODE_A_CLASS}',
-    'node_b_source': '${NODE_B_CLASS}',
-    'session_dir': '${SESSION_DIR}',
-    'stages_dir': '${SESSION_DIR}/stages',
+    "session_id":      os.environ["_SESSION_ID"],
+    "skill_version":   "1.0.0",
+    "created_at":      os.environ["_CREATED_AT"],
+    "last_updated_at": os.environ["_CREATED_AT"],
+    "mode":            os.environ["_MODE"],
+    "node_a_source":   os.environ["_NODE_A_CLASS"],
+    "node_b_source":   os.environ["_NODE_B_CLASS"],
+    "input_paths": {
+        "node_a": os.environ["_NODE_A_PATH"],
+        "node_b": os.environ["_NODE_B_PATH"],
+    },
+    "session_dir":         os.environ["_SESSION_DIR"],
+    "stages_dir":          os.environ["_SESSION_DIR"] + "/stages",
+    "executed_nodes":      [],
+    "signal_state":        {},
+    "back_edges_enqueued": [],
+    "failed_spawns":       [],
+    "halt_reason":         None,
+    "verbose_trace":       [],
 }
-json.dump(meta, sys.stdout, indent=2)
-" > "${SESSION_DIR}/session.json"
+print(json.dumps(meta, indent=2))
+PY
+
+# Atomic rename per spec §4.13
+mv "${SESSION_DIR}/session.json.tmp" "${SESSION_DIR}/session.json"
 
 echo "  [init] session.json written" >&2
 

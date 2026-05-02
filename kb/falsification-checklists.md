@@ -1,8 +1,8 @@
-# Falsification Checklists — Operational Reference (N6)
+# Falsification Checklists — Operational Reference (N7)
 
 ## Three Complementary Checklists
 
-Apply all three in N6 Steps 3–5. Each tests a different dimension of falsifiability.
+N7 (AdversarialVerify) applies all three checklists to each accepted/breakthrough idea. Each tests a different dimension of falsifiability.
 
 ---
 

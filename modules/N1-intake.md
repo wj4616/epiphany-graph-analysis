@@ -48,7 +48,7 @@ You are now adopting the Einstein/Feynman persona for this stage. Focus on first
 ### Step 2: HG-1 -- Output != Input check
 Verify that `enhanced.md` target path != Node A source path.
 - If Node A was provided inline (no source file path): trivially satisfied, record `node_a_source: 'inline'`
-- If both are paths and they match: HALT with `FAILED: HG-1 -- enhanced.md target path equals Node A source path. Output would overwrite input.`
+- If both are paths and they match: HALT with `FAILED: HG-1 — enhanced.md target path equals Node A source path. Output would overwrite input.`
 - If paths differ: PASS and record
 
 ### Step 3: Node A Decomposition

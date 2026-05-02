@@ -48,6 +48,19 @@ Dual hat: Feynman (clarity, simplicity, "what is the simplest version that is st
 - Read `xref_map` from SIGNAL_STATE (N4): cross-reference map for connection context
 - Read `expansion_digest` from SIGNAL_STATE (N12) ONLY if this is a re-synthesis pass (E26 back-edge fired). Contains thin-spot identification and expansion targets.
 
+### Pass Detection: First-Pass Preservation
+
+Before writing anything, detect whether this is a re-synthesis pass (E26 fired):
+
+1. Check whether `expansion_digest` is present in SIGNAL_STATE.
+2. If present AND `{session_dir}/enhanced.md` exists, this is **pass 2**:
+   - Rename existing `{session_dir}/enhanced.md` to `{session_dir}/enhanced-first-pass.md` (atomic rename via `mv`).
+   - Set `synthesis_pass: 2` in stage file frontmatter.
+   - Continue with expansion-aware synthesis below.
+3. Otherwise this is **pass 1**: set `synthesis_pass: 1`. Proceed.
+
+The orchestrator may also handle the rename — in either case, the first-pass file MUST be preserved before pass-2 output is written.
+
 ### Pre-Write Phase: Contradiction Check
 
 Before writing a single word of enhanced draft, scan all selected solutions for contradictions:
@@ -95,6 +108,23 @@ Write the enhanced draft following these rules:
    - Mark expansion additions with `<!-- BEGIN_EXPANSION ref="E<n>" -->` and `<!-- END_EXPANSION -->`
    - Expansions must fit within N12's word budget per target
    - If an expansion target is infeasible (would break something), flag it in decisions and skip it
+
+### Pre-Write Phase: V5 Well-Formedness Self-Check (1 retry)
+
+**Before** writing the final enhanced.md, validate the in-memory draft against V5 criteria:
+
+1. **YAML frontmatter parse**: confirm any frontmatter block is valid YAML (`yaml.safe_load`-able).
+2. **Markdown structural balance**:
+   - Every code fence (```` ``` ````) opens and closes (count must be even).
+   - Every `<!-- BEGIN_ENHANCEMENT ... -->` has a matching `<!-- END_ENHANCEMENT -->`.
+   - Every `<!-- BEGIN_EXPANSION ... -->` has a matching `<!-- END_EXPANSION -->`.
+3. **No truncation marker** (no `SYNTHESIS TRUNCATED` left from a partial run).
+
+If any check fails, **retry once**:
+- Diagnose the structural issue.
+- Reissue the writing phase with the issue logged in synthesis-decisions.md.
+
+If retry also fails, write what you have, append `pre_write_v5_check: failed_after_retry` to the frontmatter, and let N11's V5 catch it as a HARD FAIL.
 
 ### Output Format
 

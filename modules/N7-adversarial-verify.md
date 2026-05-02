@@ -22,8 +22,9 @@ kb_files:
   - "falsification-checklists.md"
 output_signal_fields:
   - "falsification_result"
+  - "adversarial_digest"
 output_file: "stages/N7-adversarial-verify.md"
-hard_gates_referenced: ["HG-4"]
+hard_gates_referenced: []
 ---
 
 # N7 -- AdversarialVerify (Popper + Millikan)
@@ -139,7 +140,9 @@ Summary statistics:
 
 ## SIGNAL_STATE Output
 
-Write `(N7, falsification_result)`:
+N7 writes TWO SIGNAL_STATE entries (per graph.json E18 + E19):
+
+Write `(N7, falsification_result)` — structured verdict consumed by N9 router (E18):
 ```yaml
 verdict: "pass" | "fail" | "partial"
 # pass = ≥70% SURVIVED+WEAKENED, no FALSIFIED without alternatives
@@ -151,6 +154,22 @@ survived_count: <int>
 falsified_count: <int>
 no_alternative_count: <int>
 signal_flags: ["S7_no_alternatives"]  # if raised
+```
+
+Write `(N7, adversarial_digest)` — rich per-idea content consumed optionally by N8 (E19):
+```yaml
+per_idea_results:
+  - idea_id: <str>           # I_n or B_n
+    verdict: "survived" | "weakened" | "falsified" | "unfalsifiable" | "needs-experiment"
+    weaknesses: [<list of identified weaknesses>]
+    counter_examples: [<list>]
+    alternatives_generated: [<list>]
+    falsification_notes: <str>   # 1-2 sentence summary
+aggregate:
+  survived: <int>
+  weakened: <int>
+  falsified: <int>
+  unfalsifiable: <int>
 ```
 
 ## Failure Modes

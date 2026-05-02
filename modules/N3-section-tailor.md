@@ -48,9 +48,9 @@ N3 fires only when E08 gate is true: `intake_digest.node_b_type ∈ {genius-curr
 
 For each canonical section that N1 matched in Node B:
 
-1. **Identify the section type** from N1's match table (Headline Insight, Core Argument, etc.)
+1. **Identify the section type** from N1's match table (Headline Insight, Theory Collisions, Discovery vs. Proof, Independence-Verified Bridges, Alternative Hypotheses, Density-Checked Falsification, Scope Limits, Coherence Signals, Generalization Checks, Open Questions & Next Probes)
 2. **Look up the extraction strategy** in `kb/section-tailoring-map.md`:
-   - Each section type has a primary extraction pattern (e.g., Headline Insight → extract the core claim in ≤2 sentences; Supporting Evidence → extract the strongest piece of evidence with its source; Counter-Arguments → extract the strongest counter and its rebuttal)
+   - Each section type has a primary extraction pattern (e.g., Headline Insight → extract the core claim in ≤2 sentences; Theory Collisions → extract `(frame_a, frame_b, divergence)` tuples; Density-Checked Falsification → extract `(condition, density, evidence)` tuples; Coherence Signals → extract `(indicator, source, strength)` tuples)
 3. **Apply the strategy**: read the body content N2b analyzed, apply the extraction pattern, produce the tailored output
 4. **Preserve precision**: do not paraphrase into vagueness. If the original uses specific terminology, preserve it. If it uses vague language, flag it.
 5. **AP-12 compliance**: Process Headline Insight section FIRST. The headline insight frames everything else; extracting it last produces incoherent output.
@@ -122,6 +122,6 @@ headline_insight_extracted: "<the core extracted claim>"
 
 ## Failure Modes
 
-- Section-tailoring-map.md missing or doesn't cover a matched section type → use generic extraction: summarize in 2-3 sentences preserving key claims; flag the missing KB entry
+- section-tailoring-map.md missing or doesn't cover a matched section type → use generic extraction: summarize in 2-3 sentences preserving key claims; flag the missing KB entry
 - N2b analysis_b_digest is incomplete → tailor what's available; mark missing sections as "unavailable"
-- Context budget exceeded → prioritize Headline Insight, Core Argument, Supporting Evidence; demote remaining sections to single-sentence extraction
+- Context budget exceeded → prioritize Headline Insight, Theory Collisions, Density-Checked Falsification (highest-leverage trio); demote remaining sections to single-sentence extraction

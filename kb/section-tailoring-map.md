@@ -1,6 +1,6 @@
 # Section-Tailoring Map
 
-Maps each of the 10 canonical genius-detection sections to its extraction strategy. Used by N3 (SectionTailor, Feynman hat) and referenced by N1 (Genius Detection) for the canonical section list.
+Maps each of the 10 canonical genius-minds sections to its extraction strategy. Used by N3 (SectionTailor, Feynman hat) and referenced by N1 (Genius Detection) for the canonical section list. The taxonomy is the spec's Appendix C list — it must stay in lockstep with `modules/N1-intake.md` Step 4.
 
 ## Canonical Section List (10 sections)
 
@@ -8,7 +8,7 @@ These are the 10 canonical sections in descending order of structural importance
 
 ### 1. Headline Insight
 
-**Header variants**: "Headline Insight", "Key Insight", "Core Finding", "Main Discovery", "Central Thesis"
+**Header variants**: "Headline Insight", "Primary Insight", "Lead Insight", "Top-Line Insight", "Bottom Line", "Core Insight"
 
 **Body expectations**: A concise, powerful statement of the single most important thing Node B found. Should be ≤3 sentences, immediately impactful.
 
@@ -19,96 +19,101 @@ These are the 10 canonical sections in descending order of structural importance
 
 **AP-12 rule**: Process this section FIRST. The headline insight frames everything else.
 
-### 2. Core Argument
+### 2. Theory Collisions
 
-**Header variants**: "Core Argument", "Main Argument", "Central Claim", "Thesis"
+**Header variants**: "Theory Collisions", "Theoretical Conflicts", "Conflicting Claims", "Theory Conflicts", "Claim Conflicts"
 
-**Body expectations**: The argument's logical structure — premises, reasoning steps, conclusion. Should reference specific Node A sections.
-
-**Extraction strategy (N3)**:
-- Extract: conclusion (1 sentence) + strongest premise (1 sentence)
-- If premise chain is present: preserve it (it's valuable structure)
-- If only conclusion with no premises: flag as "assertion, not argument"
-
-### 3. Supporting Evidence
-
-**Header variants**: "Supporting Evidence", "Evidence", "Support", "Empirical Basis", "Data"
-
-**Body expectations**: Evidence cited in support of the core argument. Should reference specific Node A passages, external sources, or logical demonstrations.
+**Body expectations**: Cases where two theoretical frames make incompatible predictions about Node A. Should name both frames and the predicted divergence.
 
 **Extraction strategy (N3)**:
-- Extract the single strongest piece of evidence with its source reference
-- If multiple evidence types (textual + logical + external): extract the best of each type
-- If no evidence, only restatement: flag as "unsupported"
+- Extract each named frame pair + the divergence point as a tuple `(frame_a, frame_b, divergence)`
+- If a "collision" is presented but only one frame is described: flag as "asymmetric collision — only one frame characterized"
+- If divergence is rhetorical only (no operational difference): flag as "ceremonial collision"
 
-### 4. Counter-Arguments
+### 3. Discovery vs. Proof
 
-**Header variants**: "Counter-Arguments", "Counterarguments", "Objections", "Challenges", "Alternatives Considered"
+**Header variants**: "Discovery vs Proof", "Discovery–Proof Gap", "Claim vs Evidence", "Discovery and Proof"
 
-**Body expectations**: Arguments against the core argument, honestly presented and then addressed. Shows intellectual honesty.
-
-**Extraction strategy (N3)**:
-- Extract: strongest counter-argument (1-2 sentences) + its rebuttal (1-2 sentences)
-- If counter-arguments presented but not rebutted: flag as "unresolved counter-arguments"
-- If section exists but contains no actual counter-arguments (just "no significant counter-arguments found"): flag as ceremonial
-
-### 5. Implications
-
-**Header variants**: "Implications", "Consequences", "What This Means", "Impact", "Significance"
-
-**Body expectations**: What follows if the core argument is correct. Practical, theoretical, or methodological consequences.
+**Body expectations**: Honest split between what Node B *discovered* (a claim it generated) versus what it *proved* (a claim it supported with independent evidence). The gap is informative.
 
 **Extraction strategy (N3)**:
-- Extract the most surprising or consequential implication (not the most obvious one)
-- If all implications are obvious follow-ons: flag as "low-novelty implications"
+- Build two lists: `discovered` (claims) and `proven` (claims with attached independent evidence)
+- For each `discovered`-only claim: note "discovery-only — no independent proof yet" — these are candidates for N6 defixation if they're load-bearing
+- If everything is in one column: flag as "discovery-without-proof" or "proof-without-discovery" depending on which side is empty
 
-### 6. Limitations
+### 4. Independence-Verified Bridges
 
-**Header variants**: "Limitations", "Caveats", "Boundary Conditions", "Scope Limits", "Constraints"
+**Header variants**: "Independence Bridges", "Verified Bridges", "Cross-Domain Bridges", "Bridges (Verified)"
 
-**Body expectations**: Honest accounting of what the analysis does NOT cover, where it might break, what assumptions it depends on.
-
-**Extraction strategy (N3)**:
-- Extract every stated limitation (they are all valuable for downstream nodes)
-- If section is perfunctory ("this analysis has limitations including scope"): flag as ceremonial
-
-### 7. Alternative Views
-
-**Header variants**: "Alternative Views", "Alternative Interpretations", "Other Perspectives", "Different Readings", "Competing Frameworks"
-
-**Body expectations**: Ways Node A could be interpreted differently that are NOT counter-arguments to Node B's position.
+**Body expectations**: Connections between Node A and external domains where the bridge has been validated against an independent source — not assumed by analogy.
 
 **Extraction strategy (N3)**:
-- Extract the most viable alternative (the one that a reasonable person might prefer)
-- If all alternatives are straw men: flag as "weak alternatives"
+- Extract each bridge as `(node_a_anchor, external_domain, verification_source)`
+- If the verification source is the same author / same paper as the bridge claim: demote to "self-verified" and flag — these are weaker
+- Bridges with verified independence are the strongest candidates for N5 lateral ideation seeds
 
-### 8. Synthesis
+### 5. Alternative Hypotheses
 
-**Header variants**: "Synthesis", "Integration", "Putting It Together", "Holistic View", "Unified Picture"
+**Header variants**: "Alt Hypotheses", "Alternative Theories", "Counter-Hypotheses", "Competing Hypotheses"
 
-**Body expectations**: How the pieces fit together. Cross-section connections, emergent themes, the big picture.
-
-**Extraction strategy (N3)**:
-- Extract the integration insight (how pieces connect)
-- If section is summary, not synthesis (restates pieces without connecting them): flag
-
-### 9. Action Items
-
-**Header variants**: "Action Items", "Recommendations", "Next Steps", "What To Do", "Applications", "Practical Steps"
-
-**Body expectations**: Concrete, actionable recommendations derived from the analysis.
+**Body expectations**: Hypotheses other than Node B's primary one that explain the same data. The strongest alternative should be characterized fairly.
 
 **Extraction strategy (N3)**:
-- Extract every action item that is specific enough to execute
-- Score actionability: concrete ("Add §2.3 example about...") vs. vague ("Improve the document")
-- If no concrete items: flag as "no actionable output"
+- Extract the **best-fit** alternative (per AP-10: do NOT treat alternative hypotheses as a multiple-competing-ideas list — only the strongest)
+- Record the operational difference between primary and best-fit alternative
+- If alternatives are presented as straw men (only weakest is named): flag as "alternatives-as-strawmen"
+
+### 6. Density-Checked Falsification
+
+**Header variants**: "Falsification (Density-Checked)", "Density Falsification", "Counter-Examples", "Falsification Checks"
+
+**Body expectations**: Specific falsifying conditions plus an honest assessment of how often those conditions occur in practice (the density check distinguishes "could-fail-in-principle" from "actually-fails-here").
+
+**Extraction strategy (N3)**:
+- Extract each falsification condition + its density assessment as `(condition, density: low|medium|high, evidence)`
+- Density-low falsifications are advisories (the condition rarely occurs); density-high falsifications are blockers (the condition is common)
+- If a condition is listed without density: flag as "undensitied falsification — assess before relying"
+
+### 7. Scope Limits
+
+**Header variants**: "Scope Boundaries", "Applies-to / Does-not-extend-to", "Boundaries", "Domain Limits"
+
+**Body expectations**: Where the analysis applies and — crucially — where it does NOT extend. The "does-not-extend-to" half is what most documents skip.
+
+**Extraction strategy (N3)**:
+- Extract two lists: `applies_to` and `does_not_extend_to`
+- If `does_not_extend_to` is empty or perfunctory: flag as "asymmetric scope — limits unstated"
+- The strongest scope limits cite a specific kind of input that breaks the analysis
+
+### 8. Coherence Signals
+
+**Header variants**: "Convergent Signals", "Coherence Indicators", "Signal Convergence", "STRONG/MODERATE/WEAK Signals"
+
+**Body expectations**: Independent indicators that converge on the same conclusion. Strength rating (STRONG/MODERATE/WEAK) per signal.
+
+**Extraction strategy (N3)**:
+- Extract each signal as `(indicator, source, strength: STRONG|MODERATE|WEAK)`
+- Coherence is real only when sources are independent — flag any cluster of signals from a single source as "single-source coherence"
+- STRONG signals from independent sources are the most actionable for N8 synthesis
+
+### 9. Generalization Checks
+
+**Header variants**: "Generalization", "Holds-at / Breaks-at", "Generality Checks", "Universality Tests"
+
+**Body expectations**: Tests of how far the analysis generalizes — does it hold at scale? at edge cases? in adjacent domains?
+
+**Extraction strategy (N3)**:
+- Extract each test as `(test_dimension, holds_at, breaks_at)`
+- If only "holds-at" cases are listed (no breaking points): flag as "untested generalization — breaking points not characterized"
+- "Breaks-at" findings are often the most useful — they sharpen Node A's actual scope
 
 ### 10. Open Questions & Next Probes
 
-**Header variants**: "Open Questions", "Next Probes", "Future Work", "Unresolved", "Further Investigation", "Remaining Questions"
+**Header variants**: "Open Questions", "Next Probes", "Future Work", "Unresolved", "Further Investigation", "Questions & Probes", "Probes & Questions"
 
-**Body expectations**: What Node B couldn't resolve. Honest unknowns. Specific questions for further investigation.
+**Body expectations**: What Node B couldn't resolve. Honest unknowns. Specific questions for further investigation, ideally with a method for answering each.
 
 **Extraction strategy (N3)**:
 - Extract the most provocative open question (the one that, if answered, would most change the analysis)
+- For each question, capture the suggested probe/method if any
 - If all questions are rhetorical or unanswerably broad: flag as "ceremonial"

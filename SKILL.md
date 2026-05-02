@@ -1,6 +1,6 @@
 ---
 name: epiphany-graph-analysis
-version: 1.0.0
+version: 1.0.2
 description: >
   Graph-of-Thought reimplementation of epiphany-analysis. Takes a Node A
   (original text) and optional Node B (analysis), executes a 14-node
@@ -79,7 +79,7 @@ Maintain these in-memory structures during execution:
 
 ## STEP 0 — FLAG RESOLUTION + GRAPH LOAD + PRC1
 
-### 0.1 Parse flags
+### 0.1 Parse flags + reject invalid combinations (per spec §8.1)
 
 ```
 node-a     : required (text or file path)
@@ -92,6 +92,23 @@ node-b     : optional (text or file path; if omitted, N1 substitutes inline)
 --resume <dir>        : resume from session directory
 --retry-failed <dir>  : retry only failed nodes from session
 ```
+
+**Rejection matrix (HALT with the exact message; messages match spec Appendix E):**
+
+| Invalid combination | Message |
+|---|---|
+| `--minimal` flag present | `FAILED: --minimal mode is no longer supported. Use /epiphany-analysis for fast-path runs, or run without flag for STANDARD mode.` |
+| Two of `{--standard, --deep}` | `FAILED: Conflicting scale flags.` |
+| Unknown flag `<flag>` | `FAILED: Unknown flag: <flag>.` |
+| `--resume` without `<session_dir>` | `FAILED: Resume requires session directory argument.` |
+| `--retry-failed` without `<session_dir>` | `FAILED: Retry-failed requires session directory argument.` |
+| `--resume` with scale conflicting with saved session | `FAILED: Resume scale conflicts with saved session.scale = <X>.` |
+| `--resume` with skill major-version mismatch | `FAILED: Skill version mismatch: cannot resume <saved_version> session under <current_version> skill.` |
+| Effective `genius_threshold ≤ drift_threshold` | `FAILED: Genius threshold (<g>) must exceed drift threshold (<d>).` |
+| `--genius-threshold ≤ 0` | `FAILED: Genius threshold must be positive.` |
+| `--quiet` AND `--verbose` | `FAILED: Conflicting verbosity flags.` |
+| `--genius-threshold > 10` | ADVISORY (not HALT): `ADVISORY: Genius threshold (<g>) exceeds canonical section count (10); all Node B inputs will classify as generic-fallback.` Continue. |
+| `--retry-failed` on a clean session (`failed_spawns:[] ∧ halt_reason:null`) | ADVISORY: `Session is complete; no failed spawns to retry.` Exit 0. |
 
 ### 0.2 Load and validate graph
 
@@ -225,7 +242,7 @@ N7 applies Popperian falsification to every accepted + breakthrough idea.
 
 ### 3.6 Process N7 result → Execute N9 inline
 
-N7 completes. Add `(N7, falsification_result)` to SIGNAL_STATE. Verify `stages/N7-adversarial-verify.md` written.
+N7 completes. Add **both** `(N7, falsification_result)` (E18 → N9) **and** `(N7, adversarial_digest)` (E19 → N8 optional) to SIGNAL_STATE — N7's spawn output contains both payloads per N7 module §SIGNAL_STATE Output. Verify `stages/N7-adversarial-verify.md` written.
 
 Execute **N9 Router inline** immediately. Read `modules/N9-router.md`. Apply routing logic. Write `stages/N9-router.md`. Add `(N9, falsification_digest)` to SIGNAL_STATE.
 
@@ -257,13 +274,13 @@ N10 produces the enhanced draft with BEGIN/END_ENHANCEMENT markers.
 
 N10 completes. Add `(N10, enhanced_draft)` and `(N10, enhancement_summary)` to SIGNAL_STATE.
 
-Execute **N11 Verify inline**. Read `modules/N11-verify.md`. Run the V1-V8 verification battery against the enhanced draft. Enforce HG-3 (constraint violations = halt) and HG-5 (pass rate <70% = fail).
+Execute **N11 Verify inline**. Read `modules/N11-verify.md`. Run the V1-V8 verification battery against the enhanced draft per spec §7.2 (V5/V7/V8 are HARD checks). Enforce HG-3 (constraint violations or incomplete hybrid trails = halt) and HG-5 (pass rate <70% = fail).
 
-Write `stages/N11-verify.md`. Add `(N11, verification_report)` to SIGNAL_STATE.
+Write `stages/N11-verify.md`. Add `(N11, first_pass_verified)` to SIGNAL_STATE — payload includes per-V status, verdict, pass_rate, hg3, hg5, signal_flags, and `pass: 1|2`.
 
 ### 3.11 Evaluate E25 (N12 expansion, DEEP only)
 
-E25 gate: `S11_artifact_gap ∈ verification_report.signal_flags ∧ mode=DEEP ∧ pass=1`.
+E25 gate: `S11_artifact_gap ∈ first_pass_verified.signal_flags ∧ mode=DEEP ∧ pass=1`.
 
 If true: Execute **N12 inline**. Read `modules/N12-expand.md`. Identify thin spots. Write `stages/N12-expand.md`. Add `(N12, expansion_digest)` to SIGNAL_STATE.
 
@@ -278,6 +295,22 @@ Copy N10's final enhanced draft to `{SESSION_DIR}/enhanced.md`. If DEEP+expansio
 ---
 
 ## STEP 4 — ASSEMBLE ARTIFACTS + EMIT SUMMARY
+
+### 4.0 Write top-level artifacts (extracted from stage files, per spec §4)
+
+For each artifact below: extract the named body section(s) from the stage file and write them to a top-level file at `{SESSION_DIR}/<artifact>.md` using the `.tmp` rename atomic-write pattern from spec §4.13. Frontmatter for each artifact follows spec §4.5–§4.10.
+
+| Artifact | Source stage file → body sections |
+|---|---|
+| `ideas-catalog.md` (§4.5) | `stages/N5-lateral-ideate.md` → "Raw Ideas Catalog" + "Domain Coverage" + "Ideation Passes" |
+| `accepted-ideas-catalog.md` (§4.6) | `stages/N5.5-idea-filter.md` → "Filter Criteria Applied" + "Original-Pass Accepted Ideas" + "Original-Pass Rejected Ideas" + "Supplemental Pass" |
+| `solution-catalog.md` (§4.7) | `stages/N8-solution-engineer.md` → "Solution Catalog" + "Budget Report" + "Failure Mode Log" |
+| `dropped-by-budget.md` (§4.16, conditional) | `stages/N8-solution-engineer.md` → "Dropped-by-Budget" — only emit if N8's budget-defer trigger fired |
+| `synthesis-decisions.md` (§4.8) | `stages/N10-synthesize.md` → "Pre-Write Contradiction Check" + "Synthesis Decisions" |
+| `self-audit.md` (§4.9) | `stages/N11-verify.md` → all body sections (V1-V8 Results, Verdict Aggregation, Pass Detection, Signal Flags) |
+| `expansion-pass.md` (§4.10, DEEP+E25 only) | `stages/N12-expand.md` → all body sections — only emit if N12 ran |
+
+This step runs **before** §4.1–§4.3 because `analysis-report.md` and `signal-trace.md` may reference these artifacts.
 
 ### 4.1 Assemble analysis-report.md
 
@@ -340,3 +373,5 @@ If DEEP+expansion fired: note `enhanced-first-pass.md` + N12 stage file.
 **--resume <dir>**: Read `session.json` from the session directory. Load SIGNAL_STATE and executed_nodes from the snapshot. Continue execution from the first unexecuted node in topological order.
 
 **--retry-failed <dir>**: Same as resume, but only re-execute nodes whose stage files have `status != "complete"`. Preserve completed node outputs.
+
+**Session.json update protocol** (per spec §4.13): after every node completes, the orchestrator updates the session.json fields `executed_nodes`, `signal_state`, `back_edges_enqueued`, `failed_spawns`, and `last_updated_at` (ISO-8601 now), using the `.tmp` rename atomic-write pattern. This makes `--resume` reconstructible from disk and gives `--resume` a freshness signal. Updates are append-only for `executed_nodes`/`back_edges_enqueued` and merge-by-key for `signal_state`.

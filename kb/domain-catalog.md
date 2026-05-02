@@ -1,8 +1,8 @@
-# Domain Catalog — Constraint Survey Reference (N2)
+# Domain Catalog — Domain Survey Reference (N5)
 
 ## Usage
 
-Read this catalog when surveying candidate domains in N2 Step 2. For each domain, describe the problem constraint in domain-agnostic terms, then check whether the domain has a known solution pattern for that structural form.
+N5 (LateralIdeate) reads this catalog while generating ideas across multiple domains. For each candidate idea, describe the underlying structure in domain-agnostic terms, then check whether the catalog domain has a known solution pattern for that structural form.
 
 ## 25 Pre-Classified Domains
 

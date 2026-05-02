@@ -5,7 +5,7 @@ module_version: "1.0.0"
 type: ROUTER
 exec_type: "inline"
 hat: null
-context_budget_lines: 50
+context_budget_lines: 100
 scale_gates: ["STANDARD", "DEEP"]
 activation:
   - "always"
@@ -58,6 +58,25 @@ Minimal decision node. Reads N7's falsification result and determines whether th
 ### Output
 
 Write `stages/N9-router.md` with:
+
+#### Frontmatter:
+```yaml
+---
+node_id: "N9"
+node_name: "Router"
+exec_type: "inline"
+hat: null
+started_at: "ISO-8601"
+completed_at: "ISO-8601"
+duration_ms: <int>
+context_lines_used: <int>
+context_budget_lines: 100
+signal_flags_raised: []
+status: "complete"
+---
+```
+
+#### Body sections:
 
 ### Routing Decision
 Declare: chosen route (N8 / N6-loopback / N8-with-warnings). Include the specific condition that triggered the decision.

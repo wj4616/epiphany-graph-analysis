@@ -1,8 +1,8 @@
-# De Bono Lateral Thinking Techniques — Operational Reference
+# De Bono Lateral Thinking Techniques — Operational Reference (N5)
 
-## Three Core Techniques for N2 Step 8 Fallback
+## Three Core Techniques for N5 Lateral Ideation
 
-Applied as N2's lateral fallback when Step 6 shows <3 viable analogy mappings. Use provocation, random-entry, and reversal together to generate ≥5 structurally distinct candidates.
+Applied by N5 (LateralIdeate, de Bono hat) to generate structurally distinct ideas across domains drawn from `domain-catalog.md`. Use provocation, random-entry, and reversal together to generate ≥5 structurally distinct candidates per pass.
 
 ---
 

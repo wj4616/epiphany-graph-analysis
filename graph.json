@@ -142,7 +142,7 @@
     {
       "id": "N7",
       "name": "AdversarialVerify",
-      "module_file": "modules/N7-adversarial.md",
+      "module_file": "modules/N7-adversarial-verify.md",
       "module_version": "1.0.0",
       "type": "ADVERSARIAL",
       "exec_type": "spawn",
@@ -181,7 +181,7 @@
       "type": "ROUTER",
       "exec_type": "inline",
       "hat": null,
-      "context_budget_lines": 50,
+      "context_budget_lines": 100,
       "scale_gates": ["STANDARD", "DEEP"],
       "activation": ["always"],
       "raises_signals": [],
@@ -205,6 +205,7 @@
       "kb_files": [],
       "required_output_sections": ["Pre-Write Contradiction Check", "Synthesis Decisions", "Enhanced Draft", "Enhancement Summary"],
       "output_file": "stages/N10-synthesize.md",
+      "output_signal_fields": ["enhanced_draft", "enhancement_summary"],
       "sort_key": 10.0
     },
     {
@@ -267,7 +268,7 @@
     {"id": "E22", "source": "N8", "target": "N10", "type": "required", "signal_field": "solutions_digest", "scale_gates": ["STANDARD", "DEEP"], "gate_condition": null, "single_firing_cap": false},
     {"id": "E23", "source": "N10", "target": "N11", "type": "required", "signal_field": "enhanced_draft", "scale_gates": ["STANDARD", "DEEP"], "gate_condition": null, "single_firing_cap": false},
     {"id": "E24", "source": "N11", "target": "output", "type": "terminal", "signal_field": "—", "scale_gates": ["STANDARD", "DEEP"], "gate_condition": null, "single_firing_cap": false},
-    {"id": "E25", "source": "N11", "target": "N12", "type": "forward-conditional", "signal_field": "first_pass_verified", "scale_gates": ["DEEP"], "gate_condition": "verification_report.signal_flags ∋ S11_artifact_gap ∧ mode=DEEP ∧ pass=1", "single_firing_cap": true},
+    {"id": "E25", "source": "N11", "target": "N12", "type": "forward-conditional", "signal_field": "first_pass_verified", "scale_gates": ["DEEP"], "gate_condition": "first_pass_verified.signal_flags ∋ S11_artifact_gap ∧ mode=DEEP ∧ pass=1", "single_firing_cap": true},
     {"id": "E26", "source": "N12", "target": "N10", "type": "back-edge", "signal_field": "expansion_digest", "scale_gates": ["DEEP"], "gate_condition": null, "single_firing_cap": true}
   ],
   "signal_field_enum": [
@@ -284,11 +285,11 @@
     "falsification_digest",
     "solutions_digest",
     "enhanced_draft",
+    "enhancement_summary",
     "first_pass_verified",
     "expansion_digest",
     "gate:S2_thin_B",
     "gate:S7_no_alternatives ∧ ¬N6_ran",
-    "gate:S11_artifact_gap",
     "—"
   ]
 }

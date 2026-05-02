@@ -15,9 +15,10 @@ required_output_sections:
   - "Proposed Depth Passes"
   - "Expansion Targets"
 input_dependencies:
-  - "(N11, verification_report)"
+  - "(N11, first_pass_verified)"
   - "(N10, enhanced_draft)"
-optional_inputs: []
+optional_inputs:
+  - "(N10, enhancement_summary)"
 kb_files: []
 output_signal_fields:
   - "expansion_digest"
@@ -38,11 +39,11 @@ DEEP-only node activated when N11's verification detects artifact gaps in the fi
 N12 fires only when E25 gate is true: ALL of:
 - `mode == DEEP`
 - `pass == 1` (first pass only -- prevents infinite expansion loops)
-- `S11_artifact_gap ∈ verification_report.signal_flags`
+- `S11_artifact_gap ∈ first_pass_verified.signal_flags`
 
 ### Inputs
 
-- Read `verification_report` from SIGNAL_STATE (N11's output): which artifact gap types, specific V-check failures, pass rate
+- Read `first_pass_verified` from SIGNAL_STATE (N11's output): which artifact gap types, specific V-check failures, pass rate
 - Read `enhanced_draft` and `enhancement_summary` from SIGNAL_STATE (N10's output): the current draft text and N10's synthesis decisions
 
 ### Expansion Protocol

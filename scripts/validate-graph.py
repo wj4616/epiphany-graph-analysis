@@ -102,6 +102,111 @@ def check_kb_files(graph, skill_path):
     return True, None
 
 
+def _parse_module_frontmatter(path):
+    """Parse a YAML frontmatter block at the top of a markdown file.
+    Returns dict; empty dict if absent or unparseable. No yaml dep — minimal parse."""
+    try:
+        text = path.read_text()
+    except Exception:
+        return {}
+    if not text.startswith("---"):
+        return {}
+    end = text.find("\n---", 3)
+    if end == -1:
+        return {}
+    block = text[3:end]
+    try:
+        import yaml
+        return yaml.safe_load(block) or {}
+    except Exception:
+        return {}
+
+
+def _collect_module_signal_io(skill_path):
+    """Returns (producers, consumers) — sets of signal_field names produced /
+    consumed by any module's frontmatter (output_signal_fields,
+    input_dependencies, optional_inputs)."""
+    producers, consumers = set(), set()
+    mod_dir = Path(skill_path) / "modules"
+    for f in sorted(mod_dir.glob("*.md")):
+        fm = _parse_module_frontmatter(f)
+        for sf in fm.get("output_signal_fields", []) or []:
+            producers.add(sf)
+        for dep in (fm.get("input_dependencies", []) or []) + (fm.get("optional_inputs", []) or []):
+            inner = dep.strip().lstrip("(").rstrip(")")
+            parts = [p.strip() for p in inner.split(",", 1)]
+            if len(parts) == 2:
+                consumers.add(parts[1])
+    return producers, consumers
+
+
+def check_signal_field_coverage(graph, skill_path):
+    """Check 7: every signal_field_enum entry has ≥1 producing source AND
+    (for non-`—`) ≥1 consuming sink. Sources include edges and module
+    output_signal_fields; sinks include edges and module input_dependencies/
+    optional_inputs. Catches dead enum entries."""
+    enum = set(graph["signal_field_enum"])
+    producers, consumers = set(), set()
+    for e in graph["edges"]:
+        producers.add(e["signal_field"])
+        consumers.add(e["signal_field"])
+    for n in graph["nodes"]:
+        for f in n.get("output_signal_fields", []):
+            producers.add(f)
+        for dep in n.get("input_dependencies", []) + n.get("optional_inputs", []):
+            inner = dep.strip().lstrip("(").rstrip(")")
+            parts = [p.strip() for p in inner.split(",", 1)]
+            if len(parts) == 2:
+                consumers.add(parts[1])
+    mod_producers, mod_consumers = _collect_module_signal_io(skill_path)
+    producers |= mod_producers
+    consumers |= mod_consumers
+    missing_producer = enum - producers - {"—"}  # `—` (terminal/input edges) has no producer
+    missing_consumer = enum - consumers - {"—"}
+    if missing_producer:
+        return False, f"signal_field_enum entries with no producer: {sorted(missing_producer)}"
+    if missing_consumer:
+        return False, f"signal_field_enum entries with no consumer: {sorted(missing_consumer)}"
+    return True, None
+
+
+def check_module_dependency_validity(graph, skill_path):
+    """Check 8: every module's input_dependencies / optional_inputs reference
+    a signal_field that exists in the enum. Catches stale-rename drift like
+    a module still pointing at `verification_report` after rename."""
+    enum = set(graph["signal_field_enum"])
+    # Check graph.json node-level deps if present
+    for n in graph["nodes"]:
+        for dep in n.get("input_dependencies", []) + n.get("optional_inputs", []):
+            inner = dep.strip().lstrip("(").rstrip(")")
+            parts = [p.strip() for p in inner.split(",", 1)]
+            if len(parts) != 2:
+                continue
+            field = parts[1]
+            if field not in enum:
+                return False, (
+                    f"Node {n['id']}: dependency '{dep}' references "
+                    f"signal_field '{field}' not in signal_field_enum"
+                )
+    # Also check module frontmatter (true source of truth for module deps)
+    mod_dir = Path(skill_path) / "modules"
+    for f in sorted(mod_dir.glob("*.md")):
+        fm = _parse_module_frontmatter(f)
+        deps = (fm.get("input_dependencies", []) or []) + (fm.get("optional_inputs", []) or [])
+        for dep in deps:
+            inner = dep.strip().lstrip("(").rstrip(")")
+            parts = [p.strip() for p in inner.split(",", 1)]
+            if len(parts) != 2:
+                continue
+            field = parts[1]
+            if field not in enum:
+                return False, (
+                    f"Module {f.name}: dependency '{dep}' references "
+                    f"signal_field '{field}' not in signal_field_enum"
+                )
+    return True, None
+
+
 def main():
     graph_path = sys.argv[1] if len(sys.argv) > 1 else "graph.json"
     skill_path = Path(graph_path).parent
@@ -122,6 +227,16 @@ def main():
     ok, err = check_kb_files(graph, skill_path)
     if not ok:
         print(f"FAILED: PRC1 — KB file existence: {err}", file=sys.stderr)
+        return 1
+
+    ok, err = check_signal_field_coverage(graph, skill_path)
+    if not ok:
+        print(f"FAILED: PRC1 — Signal field coverage: {err}", file=sys.stderr)
+        return 1
+
+    ok, err = check_module_dependency_validity(graph, skill_path)
+    if not ok:
+        print(f"FAILED: PRC1 — Module dependency validity: {err}", file=sys.stderr)
         return 1
 
     # Schema validation
